@@ -1,0 +1,4 @@
+com/example/coffee/CoffeeApiApplication.class
+com/example/coffee/model/Coffee.class
+com/example/coffee/service/CoffeeService.class
+com/example/coffee/web/CoffeeController.class
