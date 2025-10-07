@@ -1,0 +1,22 @@
+# Maven / build artifacts
+#target/
+#!target/jenkins-tasks-api-mvn.jar        # allow only the renamed jar if building locally
+.mvn/
+.mvnw
+.mvnw.cmd
+
+# IDE / OS files
+.idea/
+.vscode/
+*.iml
+*.log
+*.class
+*.tmp
+
+# Git
+.git/
+.gitignore
+
+# Others
+Dockerfile
+README.md

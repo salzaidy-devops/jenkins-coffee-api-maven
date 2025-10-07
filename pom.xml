@@ -41,6 +41,14 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+          <executions>
+              <execution>
+                  <!-- runs at 'package' phase -->
+                  <goals>
+                      <goal>repackage</goal>
+                  </goals>
+              </execution>
+          </executions>
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
@@ -82,5 +90,6 @@
             </configuration>
         </plugin>
     </plugins>
+      <finalName>jenkins-coffee-api-mvn</finalName>
   </build>
 </project>
