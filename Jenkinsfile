@@ -26,13 +26,13 @@ pipeline {
         }
 
         stage("build jar") {
-            steps {
-                when {
+            when {
                     // conditional execution of steps, example run only if its active branch name is 'main'
-                    expression {
-                        env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master'
-                    }
+                expression {
+                    env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master'
                 }
+            }
+            steps {
                 script {
                     gv.buildJar()
                 }
@@ -40,13 +40,13 @@ pipeline {
         }
 
         stage("build image") {
-            steps {
-                when {
+            when {
                     // conditional execution of steps, example run only if its active branch name is 'main'
-                    expression {
-                        env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master'
-                    }
+                expression {
+                    env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master'
                 }
+            }
+            steps {
                 script {
                     gv.buildImage()
                 }
@@ -54,13 +54,13 @@ pipeline {
         }
 
         stage("deploy") {
-            steps {
-                when {
+            when {
                     // conditional execution of steps, example run only if its active branch name is 'main'
-                    expression {
-                        env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master'
-                    }
+                expression {
+                    env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master'
                 }
+            }
+            steps {
                 script {
                    gv.deployApp()
                 }
