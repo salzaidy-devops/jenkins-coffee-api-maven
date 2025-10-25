@@ -1,6 +1,7 @@
 #! /user/bin/env groovy
 @Library('jenkins-shared-library')
 
+// trying if pipeline will run
 def gv
 
 pipeline {
