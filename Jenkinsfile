@@ -43,7 +43,7 @@ pipeline {
             }
         }
 
-        stage("build image") {
+        stage("build and push image") {
             when {
                     // conditional execution of steps, example run only if its active branch name is 'main'
                 expression {
@@ -53,6 +53,8 @@ pipeline {
             steps {
                 script {
                     buildImage 'salzaidy/coffee-api:3.2'
+                    dockerLogin()
+                    dockerPush 'salzaidy/coffee-api:3.2'
                 }
             }
         }
