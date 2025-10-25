@@ -51,7 +51,7 @@ pipeline {
             }
             steps {
                 script {
-                    buildImage()
+                    buildImage 'salzaidy/coffee-api:3.2'
                 }
             }
         }
