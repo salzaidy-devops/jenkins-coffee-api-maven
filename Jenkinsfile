@@ -18,6 +18,7 @@ pipeline {
             steps {
                 script {
                     gv = load "script.groovy"
+                    echo "testing trigger for webhooks..."
                 }
             }
         }
