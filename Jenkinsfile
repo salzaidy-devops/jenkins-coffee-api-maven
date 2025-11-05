@@ -39,7 +39,8 @@ pipeline {
             }
             steps {
                 script {
-                    buildJar()
+                    // buildJar()
+                    buildMavenJar
                 }
             }
         }
