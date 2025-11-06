@@ -63,13 +63,11 @@ pipeline {
             steps {
                 script {
                     echo 'copying Docker compose file...'
-                    def dockerComposeCMD = "docker-compose -f docker-compose.yaml up --detached"
-
-
+                    def dockerComposeCMD = "docker-compose -f docker-compose.yaml up --detach"
                     
                     sshagent(['ec2-server-key']) {
                         // this flag is to avoid host key verification issue
-                        sh "scp docker-compose.yaml ec2-user@3.17.150.175:/home/ec2-user/"
+                        sh "scp docker-compose.yaml ec2-user@3.17.150.175:/home/ec2-user"
                         sh "ssh -o StrictHostKeyChecking=no ec2-user@3.17.150.175 ${dockerComposeCMD}"
                     }
                 }
