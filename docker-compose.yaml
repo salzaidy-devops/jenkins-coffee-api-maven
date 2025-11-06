@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   coffee-api:
     image: salzaidy/aws-coffee-api:2.0
