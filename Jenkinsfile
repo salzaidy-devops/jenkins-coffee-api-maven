@@ -1,7 +1,12 @@
-#! /user/bin/env groovy
-@Library('jenkins-shared-library')
+#!/usr/bin/env groovy
 
-// trying if pipeline will run
+library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
+    [$class: 'GitSCMSource',
+    remote: 'https://github.com/salzaidy-devops/jenkins-shared-library.git',
+    credentialsID: 'github-credentials'
+    ]
+)
+
 def gv
 
 pipeline {
@@ -11,6 +16,10 @@ pipeline {
     tools {
         maven 'mvn-3.9'
 
+    }
+
+    environment {
+        IMAGE_NAME = 'salzaidy/aws-coffee-api:2.0'
     }
 
     stages {
@@ -31,46 +40,38 @@ pipeline {
         }
 
         stage("build jar") {
-            when {
-                    // conditional execution of steps, example run only if its active branch name is 'main'
-                expression {
-                    env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master'
-                }
-            }
             steps {
                 script {
-                    // buildJar()
-                    buildMavenJar
+                    echo 'Building JAR file...'
+                    buildMavenJar()
                 }
             }
         }
 
-        stage("build and push image") {
-            when {
-                    // conditional execution of steps, example run only if its active branch name is 'main'
-                expression {
-                    env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master'
-                }
-            }
+        stage("build docker image") {
             steps {
                 script {
-                    buildImage 'salzaidy/coffee-api:3.2'
+                    echo 'Building Docker image...'
+                    buildImage(env.IMAGE_NAME)
                     dockerLogin()
-                    dockerPush 'salzaidy/coffee-api:3.2'
+                    dockerPush(env.IMAGE_NAME)
                 }
             }
         }
 
-        stage("deploy") {
-            when {
-                    // conditional execution of steps, example run only if its active branch name is 'main'
-                expression {
-                    env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master'
-                }
-            }
+        stage("Deploy") {
             steps {
                 script {
-                   gv.deployApp()
+                    echo 'copying Docker compose file...'
+                    def dockerComposeCMD = "docker-compose -f docker-compose.yaml up --detached"
+
+
+                    
+                    sshagent(['ec2-server-key']) {
+                        // this flag is to avoid host key verification issue
+                        sh "scp docker-compose.yaml ec2-user@3.17.150.175:/home/ec2-user/"
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@3.17.150.175 ${dockerComposeCMD}"
+                    }
                 }
             }
         }

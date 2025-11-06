@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  coffee-api:
+    image: salzaidy/aws-coffee-api:2.0
+    ports:
+      - 8080:8080
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: coffee_user
+      POSTGRES_PASSWORD: coffee_pass
+      POSTGRES_DB: coffee_db
+    ports:
+      - 5432:5432
