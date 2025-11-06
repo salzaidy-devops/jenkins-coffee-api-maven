@@ -4,7 +4,7 @@ services:
     ports:
       - 8080:8080
   postgres:
-    image: postgres:13
+    image: postgres:18
     environment:
       POSTGRES_USER: coffee_user
       POSTGRES_PASSWORD: coffee_pass
