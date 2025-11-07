@@ -39,6 +39,28 @@ pipeline {
             }
         }
 
+        stage("increment build number") {
+            steps {
+                script {
+                    // gv.incrementBuildNumber()
+                    echo 'incrementing build number...'
+                    // sh 'mvn build-helper:parse-version versions:set \
+                    //     -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
+                    //     versions:commit'
+                    def matcher = readFile('pom.xml') =~ '<version>(.+?)</version>'
+                    def version = matcher ? matcher[0][1] : "0.0.1"
+                    echo "Raw version is: ${version}"
+                    // env.IMAGE_NAME = "$version-$BUILD_NUMBER"
+
+                    def clearVersion = version.replace('-SNAPSHOT','')
+                    echo "Clear version is: ${clearVersion}"
+
+                    def versionWithBuild = "$version-$BUILD_NUMBER"
+                    echo "version With Build will be: ${versionWithBuild}"
+                }
+            }
+        }
+
         stage("build jar") {
             steps {
                 script {
@@ -67,11 +89,12 @@ pipeline {
                     // def dockerComposeCMD = "docker compose --file docker-compose.yaml up --detach"
 
                     def shellcmd = "bash ./server-cmds.sh ${IMAGE_NAME}"
-                    
+                    def ec2Instance = "ec2-user@3.17.150.175"
+
                     sshagent(['ec2-server-key']) {
-                        sh "scp server-cmds.sh ec2-user@3.17.150.175:/home/ec2-user"
-                        sh "scp docker-compose.yaml ec2-user@3.17.150.175:/home/ec2-user"
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@3.17.150.175 ${shellcmd}"
+                        sh "scp server-cmds.sh ${ec2Instance}:/home/ec2-user"
+                        sh "scp docker-compose.yaml ${ec2Instance}:/home/ec2-user"
+                        sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${shellcmd}"
                     }
                 }
             }
