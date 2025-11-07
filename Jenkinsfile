@@ -64,7 +64,7 @@ pipeline {
                 script {
                     echo 'copying Docker compose file...'
                     // def dockerComposeCMD = "docker-compose -f docker-compose.yaml up --detach"
-                    def dockerComposeCMD = "docker compose -f docker-compose.yaml up --detach"
+                    def dockerComposeCMD = "docker compose --file docker-compose.yaml up --detach"
                     
                     sshagent(['ec2-server-key']) {
                         // this flag is to avoid host key verification issue
