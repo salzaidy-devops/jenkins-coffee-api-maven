@@ -19,7 +19,7 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = 'salzaidy/aws-coffee-api:2.0'
+        IMAGE_NAME = 'salzaidy/aws-coffee-api:3.0'
     }
 
     stages {
@@ -63,13 +63,15 @@ pipeline {
             steps {
                 script {
                     echo 'copying Docker compose file...'
-                    def dockerComposeCMD = "docker-compose -f docker-compose.yaml up --detach"
+                    // def dockerComposeCMD = "docker-compose -f docker-compose.yaml up --detach"
                     // def dockerComposeCMD = "docker compose --file docker-compose.yaml up --detach"
+
+                    def shellcmd = "bash ./server-cmds.sh ${IMAGE_NAME}"
                     
                     sshagent(['ec2-server-key']) {
-                        // this flag is to avoid host key verification issue
+                        sh "scp server-cmds.sh ec2-user@3.17.150.175:/home/ec2-user"
                         sh "scp docker-compose.yaml ec2-user@3.17.150.175:/home/ec2-user"
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@3.17.150.175 ${dockerComposeCMD}"
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@3.17.150.175 ${shellcmd}"
                     }
                 }
             }
