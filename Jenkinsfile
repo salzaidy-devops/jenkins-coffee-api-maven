@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     echo
-                    // gv.testApp()
+                    gv.testApp()
                 }
             }
         }
