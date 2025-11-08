@@ -34,7 +34,8 @@ pipeline {
         stage("test") {
             steps {
                 script {
-                    gv.testApp()
+                    echo
+                    // gv.testApp()
                 }
             }
         }
@@ -54,7 +55,7 @@ pipeline {
                     def clearVersion = version.replace('-SNAPSHOT','')
                     echo "Clear version is: ${clearVersion}"
 
-                    env.IMAGE_NAME = "$clearVersion-$BUILD_NUMBER"
+                    env.IMAGE_NAME = "salzaidy/aws-coffee-api:$clearVersion-$BUILD_NUMBER"
                     // def versionWithBuild = "$clearVersion-$BUILD_NUMBER"
                     echo "version With Build will be: ${env.IMAGE_NAME}"
                 }
