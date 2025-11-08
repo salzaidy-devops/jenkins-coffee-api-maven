@@ -18,9 +18,9 @@ pipeline {
 
     }
 
-    // environment {
-    //     IMAGE_NAME = 'salzaidy/aws-coffee-api:3.0'
-    // }
+    environment {
+        IMAGE_NAME = 'salzaidy/aws-coffee-api:3.0'
+    }
 
     stages {
         stage("init") {
