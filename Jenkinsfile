@@ -18,9 +18,9 @@ pipeline {
 
     }
 
-    environment {
-        IMAGE_NAME = 'salzaidy/aws-coffee-api:3.0'
-    }
+    // environment {
+    //     IMAGE_NAME = 'salzaidy/aws-coffee-api:3.0'
+    // }
 
     stages {
         stage("init") {
@@ -44,19 +44,19 @@ pipeline {
                 script {
                     // gv.incrementBuildNumber()
                     echo 'incrementing build number...'
-                    // sh 'mvn build-helper:parse-version versions:set \
-                    //     -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
-                    //     versions:commit'
+                    sh 'mvn build-helper:parse-version versions:set \
+                        -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
+                        versions:commit'
                     def matcher = readFile('pom.xml') =~ '<version>(.+?)</version>'
                     def version = matcher ? matcher[0][1] : "0.0.1"
                     echo "Raw version is: ${version}"
-                    // env.IMAGE_NAME = "$version-$BUILD_NUMBER"
-
+                    
                     def clearVersion = version.replace('-SNAPSHOT','')
                     echo "Clear version is: ${clearVersion}"
 
-                    def versionWithBuild = "$version-$BUILD_NUMBER"
-                    echo "version With Build will be: ${versionWithBuild}"
+                    env.IMAGE_NAME = "$clearVersion-$BUILD_NUMBER"
+                    // def versionWithBuild = "$clearVersion-$BUILD_NUMBER"
+                    echo "version With Build will be: ${env.IMAGE_NAME}"
                 }
             }
         }
@@ -95,6 +95,24 @@ pipeline {
                         sh "scp server-cmds.sh ${ec2Instance}:/home/ec2-user"
                         sh "scp docker-compose.yaml ${ec2Instance}:/home/ec2-user"
                         sh "ssh -o StrictHostKeyChecking=no ${ec2Instance} ${shellcmd}"
+                    }
+                }
+            }
+        }
+        stage("commit version update") {
+            steps {
+                script {
+                    // gv.commitVersionUpdate()
+                    withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                        sh 'git config user.email alzaidy@example.com'
+                        sh 'git config user.name awsCoffeeApi'
+                        sh 'git status'
+                        sh 'git branch'
+                        sh 'git config --list'
+                        sh 'git remote set-url origin https://${GIT_USER}:${GIT_PASS}@github.com/salzaidy-devops/aws-coffee-api-maven.git'
+                        sh 'git add .'
+                        sh 'git commit -m "Version updated to ${env.IMAGE_NAME}"'
+                        sh 'git push origin HEAD:${env.BRANCH_NAME} https://${GIT_USER}:${GIT_PASS}@github.com/salzaidy-devops/aws-coffee-api-maven.git'
                     }
                 }
             }
