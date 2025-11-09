@@ -104,18 +104,39 @@ pipeline {
         stage("commit version update") {
             steps {
                 script {
-                    // gv.commitVersionUpdate()
-                    withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                        sh 'git config user.email alzaidy@example.com'
-                        sh 'git config user.name awsCoffeeApi'
-                        sh 'git status'
-                        sh 'git branch'
-                        sh 'git config --list'
-                        sh 'git remote set-url origin https://${GIT_USER}:${GIT_PASS}@github.com/salzaidy-devops/aws-coffee-api-maven.git'
+                    sshagent(['github-ssh-key']) {
+                        // 1) Trust GitHub host key (avoid host key verification error)
+                        sh 'mkdir -p ~/.ssh'
+                        sh 'ssh-keyscan -H github.com >> ~/.ssh/known_hosts'
+                        sh 'chmod 644 ~/.ssh/known_hosts'
+                    
+                        // 2) Switch remote to SSH (so pushes use the SSH key, not HTTPS)
+                        sh 'git remote -v'
+                        sh 'git remote set-url origin git@github.com:salzaidy-devops/aws-coffee-api-maven.git'
+                        sh 'git remote -v'
+                    
+                        // 3) Optional sanity check after known_hosts is in place
+                        sh 'ssh -T git@github.com || true'
+                    
+                        // 4) Stage + commit if there are changes
                         sh 'git add .'
-                        sh 'git commit -m "Version updated to ${IMAGE_NAME}"'
-                        sh 'git push origin HEAD:${BRANCH_NAME} https://${GIT_USER}:${GIT_PASS}@github.com/salzaidy-devops/aws-coffee-api-maven.git'
+                    
+                        // 5) Push to target branch via SSH
+                        sh 'git push origin HEAD:${BRANCH_NAME}'
                     }
+
+                    // gv.commitVersionUpdate()
+                    // withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                    //     sh 'git config user.email alzaidy@example.com'
+                    //     sh 'git config user.name awsCoffeeApi'
+                    //     sh 'git status'
+                    //     sh 'git branch'
+                    //     sh 'git config --list'
+                    //     sh 'git remote set-url origin https://${GIT_USER}:${GIT_PASS}@github.com/salzaidy-devops/aws-coffee-api-maven.git'
+                    //     sh 'git add .'
+                    //     sh 'git commit -m "Version updated to ${IMAGE_NAME}"'
+                    //     sh 'git push https://${GIT_USER}:${GIT_PASS}@github.com/salzaidy-devops/aws-coffee-api-maven.git HEAD:${BRANCH_NAME}'
+                    // }
                 }
             }
         }
