@@ -34,7 +34,7 @@ pipeline {
         stage("test") {
             steps {
                 script {
-                    echo
+                    echo "testing the application..."
                     gv.testApp()
                 }
             }
