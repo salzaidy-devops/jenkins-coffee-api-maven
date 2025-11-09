@@ -113,8 +113,8 @@ pipeline {
                         sh 'git config --list'
                         sh 'git remote set-url origin https://${GIT_USER}:${GIT_PASS}@github.com/salzaidy-devops/aws-coffee-api-maven.git'
                         sh 'git add .'
-                        sh 'git commit -m "Version updated to ${env.IMAGE_NAME}"'
-                        sh 'git push origin HEAD:${env.BRANCH_NAME} https://${GIT_USER}:${GIT_PASS}@github.com/salzaidy-devops/aws-coffee-api-maven.git'
+                        sh 'git commit -m "Version updated to ${IMAGE_NAME}"'
+                        sh 'git push origin HEAD:${BRANCH_NAME} https://${GIT_USER}:${GIT_PASS}@github.com/salzaidy-devops/aws-coffee-api-maven.git'
                     }
                 }
             }
