@@ -1,0 +1,14 @@
+version: '3.7'
+services:
+  coffee-api:
+    image: ${IMAGE}
+    ports:
+      - 8080:8080
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: coffee_user
+      POSTGRES_PASSWORD: coffee_pass
+      POSTGRES_DB: coffee_db
+    ports:
+      - 5432:5432
